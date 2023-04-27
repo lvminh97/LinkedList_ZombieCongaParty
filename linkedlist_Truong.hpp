@@ -108,234 +108,253 @@ LinkedList<T>::~LinkedList() {
 
 template <class T>
 void LinkedList<T>::AddToFront(T data) {
+    // create new node before front
     Node<T> *newNode = new Node<T>(data, front);
     if(front != NULL) {
         front->setPrevious(newNode);
     }
-    front = newNode;
-    if(size == 0) {
+    front = newNode;        // make new node as new front of list
+    if(size == 0) {         // if new node is the first element of list, then front is the same with end
         end = front;
     }
-    size++;
+    size++;                 // update the size of list
 }
 
 template <class T>
 void LinkedList<T>::AddToEnd(T data) {
+    // create new node after end
     Node<T> *newNode = new Node<T>(data);
     newNode->setPrevious(end);
     if(end != NULL) {
         end->setNext(newNode);
     }
-    end = newNode;
-    if(size == 0) {
+    end = newNode;          // make new node as new end of list
+    if(size == 0) {         // if new node is the first element of list, then front is the same with end
         front = end;
     }
-    size++;
+    size++;                 // update the size of list
 }
 
 template <class T>
 void LinkedList<T>::AddAtIndex(T data, int index) {
-    if(index < 0 || index > size) {
+    if(index < 0 || index > size) {     // throw exception when index is out of range
         throw out_of_range("LinkedList::AddAtIndex => index is out of range");
     }
-    if(index == 0) {
+    if(index == 0) {            // new node as new front of list
         AddToFront(data);
     }
-    else if(index == size) {
+    else if(index == size) {    // new node as new end of list
         AddToEnd(data);
     }
-    else {
+    else {                      
         Node<T> *cur = front;
         int i = 0;
+        // loop to index
         while(i < index) {
             cur = cur->getNext();
             i++;
         }
         
+        // create new node and link to previous and next
         Node<T> *newNode = new Node<T>(data);
         newNode->setPrevious(cur->getPrevious());
         cur->getPrevious()->setNext(newNode);
         cur->setPrevious(newNode);
         newNode->setNext(cur);
-        size++;
+        size++;     // update the size of list
     }
 }
 
 template <class T>
 void LinkedList<T>::AddBefore(Node<T> *node, T data) {
-    if(node == front) {
+    if(node == front) {         // new node as new front of list
         AddToFront(data);
     }
-    else if(node == end) {
+    else if(node == end) {      // new node is before end of list 
         AddAtIndex(data, size - 1);
     }
     else {
+        // create new node and link to previous and next
         Node<T> *newNode = new Node<T>(data);
         newNode->setPrevious(node->getPrevious());
         node->getPrevious()->setNext(newNode);
         node->setPrevious(newNode);
         newNode->setNext(node);
-        size++;
+        size++;                 // update the size of list
     }
 }
 
 template <class T>
 void LinkedList<T>::AddAfter(Node<T> *node, T data) {
-    if(node == front) {
+    if(node == front) {         // new node is after front of list
         AddAtIndex(data, 1);
     }
-    else if(node == end) {
+    else if(node == end) {      // new node as new end of list
         AddToEnd(data);
     }
     else {
+        // create new node and link to previous and next
         Node<T> *newNode = new Node<T>(data);
         node->getNext()->setPrevious(newNode);
         newNode->setNext(node->getNext());
         node->setNext(newNode);
         newNode->setPrevious(node);
-        size++;
+        size++;                 // update the size of list
     }
 }
 
 template <class T>
 T LinkedList<T>::RemoveFromFront() {
-    if(size == 0) {
+    if(size == 0) {             // throw exception when list is empty
         throw runtime_error("LinkedList::RemoveFromFront => the list is empty");
     }
-    T value = front->getData();
-    Node<T> *cur = front;
-    front = front->getNext();
+
+    T value = front->getData(); // get value of front
+    Node<T> *cur = front;       // store current front to temporary
+    // update next node as new front of list
+    front = front->getNext();   
     if (front != NULL) {
         front->setPrevious(NULL);
     }
-    delete cur;
-    size--;
-    return value;
+    delete cur;                 // free memory space
+    size--;                     // update the size of list
+    return value;               // return value
 }
 
 template <class T>
 T LinkedList<T>::RemoveFromEnd() {
-    if(size == 0) {
+    if(size == 0) {             // throw exception when list is empty
         throw runtime_error("LinkedList::RemoveFromEnd => the list is empty");
     }
-    T value = end->getData();
-    Node<T> *cur = end;
+    T value = end->getData();   // get value of end
+    Node<T> *cur = end;         // store current end to temporary
+    // update previous node as new end of list
     end = end->getPrevious();
     if (end != NULL) {
         end->setNext(NULL);
     }
-    delete cur;
-    size--;
-    return value;
+    delete cur;                 // free memory space
+    size--;                     // update the size of list
+    return value;               // return value
 }
 
 template <class T>
 void LinkedList<T>::RemoveTheFirst(T data) {
-    Node<T> *cur = front;
+    // loop to find the first node that has value equal data
+    Node<T> *cur = front;       
     while(cur != NULL) {
-        if(cur->getData() == data) {
-            if(cur == front) {
+        if(cur->getData() == data) {    // found
+            if(cur == front) {          // front?
                 RemoveFromFront();
             }
-            else if(cur == end) {
+            else if(cur == end) {       // end?
                 RemoveFromEnd();
             }
             else {
+                // update the new connection and free memory space
                 cur->getPrevious()->setNext(cur->getNext());
                 cur->getNext()->setPrevious(cur->getPrevious());
                 delete cur;
-                size--;
+                size--;     // update the size of list
             }
-            break;
+            break;          // function is ended when find and delete 1 node
         }
-        cur = cur->getNext();
+        cur = cur->getNext();       // move to next node
     }
 }
 
 template <class T>
 void LinkedList<T>::RemoveAllOf(T data) {
+    // loop through all nodes of list
     Node<T> *cur = front;
     while(cur != NULL) {
-        if(cur->getData() == data) {
-            if(cur == front) {
+        if(cur->getData() == data) {    // found
+            if(cur == front) {          // front?
                 RemoveFromFront();
                 cur = front;
             }
-            else if(cur == end) {
+            else if(cur == end) {       // end?
                 RemoveFromEnd();
                 break;
             }
             else {
+                // update the new connection and free memory space
                 Node<T>* temp = cur->getNext();
                 cur->getPrevious()->setNext(cur->getNext());
                 cur->getNext()->setPrevious(cur->getPrevious());
                 delete cur;
-                size--;
-                cur = temp;
+                size--;         // update the size of list
+                cur = temp;     // move to next node
             }
         }
         else {
-            cur = cur->getNext();
+            cur = cur->getNext();       // move to next node
         }
     }
 }
 
 template <class T>
 T LinkedList<T>::RemoveBefore(Node<T> *node) {
-    if(node == front) {
+    if(node == front) {         // throw exception when the node is front of list
         throw runtime_error("LinkedList::RemoveBefore => current node is the first node of list");
     }
-    Node<T> *prev = node->getPrevious();
-    T value = prev->getData();
-    if(prev == front) {
+    Node<T> *prev = node->getPrevious();    // get previous node
+    T value = prev->getData();              // get the value
+
+    if(prev == front) {                     // if the deleted node is front, update new front 
         node->setPrevious(NULL);
         delete prev;
         front = node;
     }
     else {
+        // delete node and make new connection
         node->setPrevious(prev->getPrevious());
         prev->getPrevious()->setNext(node);
         delete prev;
     }
-    size--;
-    return value;
+    size--;         // update the size of list
+    return value;   // return value
 }
 
 template <class T>
 T LinkedList<T>::RemoveAfter(Node<T> *node) {
-    if(node == end) {
+    if(node == end) {           // throw exception when the node is end of list
         throw runtime_error("LinkedList:RemoveAfter => current node is the last node of list");
     }
-    Node<T> *next = node->getNext();
-    T value = next->getData();
-    if(next == end) {
+    Node<T> *next = node->getNext();        // get next node
+    T value = next->getData();              // get the value
+    if(next == end) {                       // if the deleted node is end, update new end
         node->setNext(NULL);
         delete next;
         end = node;
     }
     else {
+        // delete the node and make new connection
         node->setNext(next->getNext());
         next->getNext()->setPrevious(node);
         delete next;
     }
-    size--;
-    return value;
+    size--;             // update the size of list
+    return value;       // return value
 }
 
 template <class T>
 bool LinkedList<T>::ElementExists(T data) {
+    // check list contains the element?
     return IndexOf(data) != -1;
 }
 
 template <class T>
 Node<T>* LinkedList<T>::Find(T data) {
     Node<T>* cur = front;
+    // loop all nodes of list to find 
     while(cur != NULL) {
-        if(cur->getData() == data) {
+        if(cur->getData() == data) {    // if found, return node
             return cur;
         }
         cur = cur->getNext();
     }
+    // if not found, return NULL
     return NULL;
 }
 
@@ -343,49 +362,52 @@ template <class T>
 int LinkedList<T>::IndexOf(T data) {
     int i = 0;
     Node<T> *cur = front;
+    // loop all nodes of list to find 
     while(i < size) {
-        if(cur->getData() == data){
+        if(cur->getData() == data){     // if found, return index
             return i;
         }
         cur = cur->getNext();
         i++;
     }
-    return -1;
+    return -1;      // if not found, return -1
 }
 
 template <class T>
 T LinkedList<T>::RetrieveFront() {
-    if(size == 0) {
+    if(size == 0) {     // throw exception when the list is empty
         throw runtime_error("LinkedList::RetrieveFront => the list is empty");
     }
-    return front->getData();
+    return front->getData();        // return the data of front
 }
 
 template <class T>
 T LinkedList<T>::RetrieveEnd() {
-    if(size == 0) {
+    if(size == 0) {     // throw exception when the list is empty
         throw runtime_error("LinkedList::RetrieveEnd => the list is empty");
     }
-    return end->getData();
+    return end->getData();          // return the data of end
 }
 
 template <class T> 
 T LinkedList<T>::Retrieve(int index) {
-    if(index < 0 || index >= size) {
+    if(index < 0 || index >= size) {        // throw exception when index is out of range
         throw out_of_range("LinkedList::Retrieve => index is out of range");
     }
+    // loop to index
     Node<T> *cur = front;
     int i = 0;
     while(i < index) {
         cur = cur->getNext();
         i++;
     }
-    return cur->getData();
+    return cur->getData();      // return the data
 }
 
 template <class T>
 void LinkedList<T>::PrintList() {
     Node<T> *cur = front;
+    // loop all nodes of list to print to the screen
     while(cur != NULL) {
         cout << cur->getData();
         if(cur != end) {
@@ -393,24 +415,26 @@ void LinkedList<T>::PrintList() {
         }
         cur = cur->getNext();
     }
+    // print new line
     cout << endl;
 }
 
 template <class T>
 void LinkedList<T>::Empty() {
+    // loop each node of list and free memory space
     Node<T> *cur = front;
     while(cur != NULL) {
         Node<T> *temp = cur->getNext();
         delete cur;
         cur = temp;
     }
-    front = end = NULL;
-    size = 0;
+    front = end = NULL;     // reset front and end
+    size = 0;               // reset the size of list
 }
 
 template <class T>
 int LinkedList<T>::Length() {
-    return size;
+    return size;            // get the size of list
 }
 
 #endif
