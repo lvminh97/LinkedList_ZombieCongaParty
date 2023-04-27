@@ -1,6 +1,6 @@
 #include "zombie_xxx.h"
 
-Zombie::Zombie(): type(' ') {}
+Zombie::Zombie(): type('\0') {}
 
 Zombie::Zombie(char type): type(type) {}
 
