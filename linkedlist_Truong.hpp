@@ -200,7 +200,7 @@ void LinkedList<T>::AddAfter(Node<T> *node, T data) {
 template <class T>
 T LinkedList<T>::RemoveFromFront() {
     if(size == 0) {
-        throw runtime_error("LinkedList::RemoveFromFront => list is empty");
+        throw runtime_error("LinkedList::RemoveFromFront => the list is empty");
     }
     T value = front->getData();
     Node<T> *cur = front;
@@ -216,7 +216,7 @@ T LinkedList<T>::RemoveFromFront() {
 template <class T>
 T LinkedList<T>::RemoveFromEnd() {
     if(size == 0) {
-        throw runtime_error("LinkedList::RemoveFromEnd => list is empty");
+        throw runtime_error("LinkedList::RemoveFromEnd => the list is empty");
     }
     T value = end->getData();
     Node<T> *cur = end;
@@ -355,11 +355,17 @@ int LinkedList<T>::IndexOf(T data) {
 
 template <class T>
 T LinkedList<T>::RetrieveFront() {
+    if(size == 0) {
+        throw runtime_error("LinkedList::RetrieveFront => the list is empty");
+    }
     return front->getData();
 }
 
 template <class T>
 T LinkedList<T>::RetrieveEnd() {
+    if(size == 0) {
+        throw runtime_error("LinkedList::RetrieveEnd => the list is empty");
+    }
     return end->getData();
 }
 

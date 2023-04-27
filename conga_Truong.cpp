@@ -25,7 +25,7 @@ void Conga::brains_action(Zombie randomZomb) {
     Zombie zb1(randomZomb), zb2(randomZomb);
     engine_action(zb1);
     caboose_action(zb2);
-    jump_in_action(randomZomb);
+    zombieList.AddAtIndex(randomZomb, zombieList.Length() / 2);
 }
 
 void Conga::rainbow_action(Zombie randomZomb) {

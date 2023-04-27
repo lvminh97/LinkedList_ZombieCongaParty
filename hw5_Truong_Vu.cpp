@@ -10,13 +10,18 @@ using namespace std;
 typedef void (Conga::*Conga_Func) (Zombie);
 
 const char COLOR[6] = {'R', 'Y', 'G', 'B', 'C', 'M'};
-const char ACTION[8][20] = {"Engine!", "Caboose!", "Jump In!", "Everyone Out!", "You Out!", "Brains!", "Rainbow!", "New Friends!"};
+const char ACTION[8][20] = {"Engine!", "Caboose!", "Jump in the Line!", "Everyone Out!", "You Out!", "Brains!", "Rainbow Brains!", "Making new Friends!"};
 
+Conga_Func CONGA_ACTION[8] = {
+    &Conga::engine_action, &Conga::caboose_action, &Conga::jump_in_action, &Conga::everyone_out_action,
+    &Conga::you_out_action, &Conga::brains_action, &Conga::rainbow_action, &Conga::friend_action
+};
 
 int main(int argc, char **argv) {
     // the seed for random generator
     if(argc == 3 && strcmp(argv[1], "-s") == 0) {
         int seed = atoi(argv[2]);
+        //cout << "seed: " << seed << endl;
         srand(seed);
     }
     else {
@@ -25,7 +30,7 @@ int main(int argc, char **argv) {
     
     //
     int nRound = 0;
-    cout << "Enter the number of rounds: ";
+    cout << "How many rounds do you want to run?: ";
     cin >> nRound;
 
     // initial data
@@ -40,7 +45,7 @@ int main(int argc, char **argv) {
         for(int round = 0; round < nRound; round++) {
             Zombie newZomb(COLOR[rand() % 6]);
             int action = rand() % 8;
-            //Conga_Func func = CONGA_ACTION[action];
+            Conga_Func func = CONGA_ACTION[action];
 
             if(round % 5 == 0) {
                 conga.zombieList.RemoveFromFront();
@@ -50,18 +55,9 @@ int main(int argc, char **argv) {
                 cout << "Round: " << round << endl;
                 cout << "Size: " << conga.zombieList.Length() << " :: ";
                 conga.zombieList.PrintList();
-                cout << "New Zombie: " << newZomb << " -- " << "Action: " << ACTION[action] << endl;
+                cout << "New Zombie: " << newZomb << " -- " << "Action: [" << ACTION[action] << "]" << endl;
                 // implement the action
-                switch(action) {
-                    case 0: conga.engine_action(newZomb); break;
-                    case 1: conga.caboose_action(newZomb); break;
-                    case 2: conga.jump_in_action(newZomb); break;
-                    case 3: conga.everyone_out_action(newZomb); break;
-                    case 4: conga.you_out_action(newZomb); break;
-                    case 5: conga.brains_action(newZomb); break;
-                    case 6: conga.rainbow_action(newZomb); break;
-                    case 7: conga.friend_action(newZomb); break;
-                }
+                (conga.*func)(newZomb);
                 cout << "The conga line is now:" << endl;
                 cout << "Size: " << conga.zombieList.Length() << " :: ";
                 conga.zombieList.PrintList();
@@ -75,7 +71,7 @@ int main(int argc, char **argv) {
             }
         }
         char opt;
-        cout << "Do you want to continue the party (Y/N)? ";
+        cout << "Do you want to continue the party? (y/n): ";
         cin >> opt;
         if(opt == 'N' || opt == 'n') {
             break;
