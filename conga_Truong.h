@@ -1,14 +1,13 @@
 #ifndef _CONGA_H
 #define _CONGA_H
 
-#include "linkedlist_xxx.hpp"
-#include "zombie_xxx.h"
+#include "linkedlist_Truong.hpp"
+#include "zombie_Truong.h"
 
 class Conga {
-private:
+public:
     LinkedList<Zombie> zombieList;
 
-public:
     void engine_action(Zombie randomZobm);
     void caboose_action(Zombie randomZomb);
     void jump_in_action(Zombie randomZomb);

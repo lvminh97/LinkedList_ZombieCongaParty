@@ -58,13 +58,13 @@ public:
 /****************************************************************************/
 
 template <class T>
-Node<T>::Node() : data(0), next(nullptr), previous(nullptr) {}
+Node<T>::Node() : data(0), next(NULL), previous(NULL) {}
 
 template <class T>
-Node<T>::Node(T data) : data(data), next(nullptr), previous(nullptr) {}
+Node<T>::Node(T data) : data(data), next(NULL), previous(NULL) {}
 
 template <class T>
-Node<T>::Node(T data, Node<T>* next) : data(data), next(next), previous(nullptr) {}
+Node<T>::Node(T data, Node<T>* next) : data(data), next(next), previous(NULL) {}
 
 template <class T>
 T Node<T>::getData() {
@@ -99,17 +99,24 @@ void Node<T>::setPrevious(Node<T>* prev) {
 /****************************************************************************/
 
 template <class T>
-LinkedList<T>::LinkedList() : front(nullptr), end(nullptr), size(0) {}
+LinkedList<T>::LinkedList() : front(NULL), end(NULL), size(0) {}
 
 template <class T>
 LinkedList<T>::~LinkedList() {
-
+    Node<T> *cur = front;
+    while(cur != NULL) {
+        Node<T> *temp = cur->getNext();
+        delete cur;
+        cur = temp;
+    }
+    front = end = NULL;
+    size = 0;
 }
 
 template <class T>
 void LinkedList<T>::AddToFront(T data) {
     Node<T> *newNode = new Node<T>(data, front);
-    if(front != nullptr) {
+    if(front != NULL) {
         front->setPrevious(newNode);
     }
     front = newNode;
@@ -123,7 +130,7 @@ template <class T>
 void LinkedList<T>::AddToEnd(T data) {
     Node<T> *newNode = new Node<T>(data);
     newNode->setPrevious(end);
-    if(end != nullptr) {
+    if(end != NULL) {
         end->setNext(newNode);
     }
     end = newNode;
@@ -205,7 +212,9 @@ T LinkedList<T>::RemoveFromFront() {
     T value = front->getData();
     Node<T> *cur = front;
     front = front->getNext();
-    front->setPrevious(nullptr);
+    if (front != NULL) {
+        front->setPrevious(NULL);
+    }
     delete cur;
     size--;
     return value;
@@ -219,7 +228,9 @@ T LinkedList<T>::RemoveFromEnd() {
     T value = end->getData();
     Node<T> *cur = end;
     end = end->getPrevious();
-    end->setNext(nullptr);
+    if (end != NULL) {
+        end->setNext(NULL);
+    }
     delete cur;
     size--;
     return value;
@@ -227,39 +238,95 @@ T LinkedList<T>::RemoveFromEnd() {
 
 template <class T>
 void LinkedList<T>::RemoveTheFirst(T data) {
-    int i = 0;
     Node<T> *cur = front;
-    while(i < size) {
+    while(cur != NULL) {
         if(cur->getData() == data) {
+            if(cur == front) {
+                RemoveFromFront();
+            }
+            else if(cur == end) {
+                RemoveFromEnd();
+            }
+            else {
+                cur->getPrevious()->setNext(cur->getNext());
+                cur->getNext()->setPrevious(cur->getPrevious());
+                delete cur;
+                size--;
+            }
             break;
         }
         cur = cur->getNext();
-        i++;
-    }
-    if(cur == front) {
-        RemoveTheFirst();
-    }
-    else if(cur == end) {
-        RemoveFromEnd();
-    }
-    else {
-        
     }
 }
 
 template <class T>
 void LinkedList<T>::RemoveAllOf(T data) {
-
+    Node<T> *cur = front;
+    while(cur != NULL) {
+        if(cur->getData() == data) {
+            if(cur == front) {
+                RemoveFromFront();
+                cur = front;
+            }
+            else if(cur == end) {
+                RemoveFromEnd();
+                break;
+            }
+            else {
+                Node<T>* temp = cur->getNext();
+                cur->getPrevious()->setNext(cur->getNext());
+                cur->getNext()->setPrevious(cur->getPrevious());
+                delete cur;
+                size--;
+                cur = temp;
+            }
+        }
+        else {
+            cur = cur->getNext();
+        }
+    }
 }
 
 template <class T>
 T LinkedList<T>::RemoveBefore(Node<T> *node) {
-
+    if(node == front) {
+        throw runtime_error("LinkedList::RemoveBefore => current node is the first node of list");
+    }
+    Node<T> *prev = node->getPrevious();
+    T value = prev->getData();
+    if(prev == front) {
+        node->setPrevious(NULL);
+        delete prev;
+        front = node;
+    }
+    else {
+        node->setPrevious(prev->getPrevious());
+        prev->getPrevious()->setNext(node);
+        delete prev;
+    }
+    size--;
+    return value;
 }
 
 template <class T>
 T LinkedList<T>::RemoveAfter(Node<T> *node) {
-
+    if(node == end) {
+        throw runtime_error("LinkedList:RemoveAfter => current node is the last node of list");
+    }
+    Node<T> *next = node->getNext();
+    T value = next->getData();
+    if(next == end) {
+        node->setNext(NULL);
+        delete next;
+        end = node;
+    }
+    else {
+        node->setNext(next->getNext());
+        next->getNext()->setPrevious(node);
+        delete next;
+    }
+    size--;
+    return value;
 }
 
 template <class T>
@@ -268,8 +335,15 @@ bool LinkedList<T>::ElementExists(T data) {
 }
 
 template <class T>
-Node<T>* Find(T data) {
-
+Node<T>* LinkedList<T>::Find(T data) {
+    Node<T>* cur = front;
+    while(cur != NULL) {
+        if(cur->getData() == data) {
+            return cur;
+        }
+        cur = cur->getNext();
+    }
+    return NULL;
 }
 
 template <class T>
@@ -313,8 +387,11 @@ T LinkedList<T>::Retrieve(int index) {
 template <class T>
 void LinkedList<T>::PrintList() {
     Node<T> *cur = front;
-    while(cur != nullptr) {
-        cout << cur->getData() << " ";
+    while(cur != NULL) {
+        cout << cur->getData();
+        if(cur != end) {
+            cout << '=';
+        }
         cur = cur->getNext();
     }
     cout << endl;

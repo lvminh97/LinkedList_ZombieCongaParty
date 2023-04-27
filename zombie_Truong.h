@@ -9,6 +9,8 @@ private:
 public:
     Zombie();
     Zombie(char type);
+    Zombie(const Zombie& zomb);
+    
     char getType();
     bool operator==(const Zombie zb);
 
