@@ -103,14 +103,7 @@ LinkedList<T>::LinkedList() : front(NULL), end(NULL), size(0) {}
 
 template <class T>
 LinkedList<T>::~LinkedList() {
-    Node<T> *cur = front;
-    while(cur != NULL) {
-        Node<T> *temp = cur->getNext();
-        delete cur;
-        cur = temp;
-    }
-    front = end = NULL;
-    size = 0;
+    Empty();
 }
 
 template <class T>
@@ -399,7 +392,14 @@ void LinkedList<T>::PrintList() {
 
 template <class T>
 void LinkedList<T>::Empty() {
-    ~LinkedList();
+    Node<T> *cur = front;
+    while(cur != NULL) {
+        Node<T> *temp = cur->getNext();
+        delete cur;
+        cur = temp;
+    }
+    front = end = NULL;
+    size = 0;
 }
 
 template <class T>

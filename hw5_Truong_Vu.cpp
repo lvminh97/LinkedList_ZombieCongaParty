@@ -67,10 +67,10 @@ int main(int argc, char **argv) {
                 conga.zombieList.PrintList();
                 cout << "**************************************************" << endl << endl;
             }
-            catch(runtime_error err) {
+            catch(runtime_error& err) {
 
             }
-            catch(out_of_range err) {
+            catch(out_of_range& err) {
                 
             }
         }
